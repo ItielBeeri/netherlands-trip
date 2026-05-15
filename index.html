@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>קראוונים ונהנים</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="map-container">
+        <div class="map-toggle-wrapper">
+            <label class="switch">
+                <input type="checkbox" id="map-toggle">
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">מפה אמיתית</span>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <div id="sidebar">
+        <header>
+            <h1>קראוונים ונהנים</h1>
+            <p>משפחת ברונר חוגגת את החיים • הולנד, קיץ תשפ"ו</p>
+        </header>
+        <div id="cards-container"></div>
+    </div>
+
+    <div id="detail-modal" class="hidden">
+        <div class="modal-content">
+            <div id="modal-color-bar"></div>
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+
+            <!-- קרוסלת תמונות -->
+            <div class="carousel-container">
+                <img id="modal-image" src="" alt="תמונת המקום">
+                <button class="carousel-btn prev" onclick="changeSlide(-1)">&#10094;</button>
+                <button class="carousel-btn next" onclick="changeSlide(1)">&#10095;</button>
+                <div id="image-counter" class="image-counter">1/1</div>
+            </div>
+
+            <div class="modal-body">
+                <h2 id="modal-title"></h2>
+                <p class="dates" id="modal-dates"></p>
+                <p class="desc" id="modal-desc"></p>
+                <div class="modal-buttons">
+                    <a id="modal-gmaps" href="#" target="_blank" class="btn btn-nav"><svg xmlns="http://www.w3.org/2000/svg" width="17" height="22" viewBox="0 0 24 32" style="flex-shrink:0;margin-left:4px"><path d="M12 0C6.48 0 2 4.48 2 10c0 7.5 10 22 10 22S22 17.5 22 10C22 4.48 17.52 0 12 0z" fill="#EA4335"/><path d="M12 0v32c.55 0 1.07-.24 1.43-.66C15.07 29.34 22 19.5 22 12 22 5.37 17.52 0 12 0z" fill="#C5221F" opacity="0.4"/><circle cx="12" cy="10" r="4.5" fill="#fff"/></svg> Google Maps</a>
+                    <a id="modal-website" href="#" target="_blank" class="btn btn-web">🌐 אתר רשמי</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+:root {
+    /* Palette inspired by the illustrated Netherlands map */
+    --primary: #e8392a;          /* vivid tulip red — used for h1 header and map route path */
+    --primary-dark: #962d22;
+    --bg: #1a1f14;               /* very dark forest green-black */
+    --bg-card: #22291a;          /* dark moss green */
+    --bg-card-hover: #2a3320;
+    --text: #f0ede4;             /* warm off-white / sandy parchment */
+    --text-muted: #8a9e7a;       /* muted sage green */
+    --border: rgba(255,255,255,0.07);
+
+    /* Stop accent colors — darker shades for use as backgrounds (white text on top),
+       lighter shades for use as text/borders on dark backgrounds */
+    --c1-bg:  #1a6b8a;  --c1-fg:  #4db8d8;   /* ocean blue */
+    --c2-bg:  #1f7a4a;  --c2-fg:  #4ec882;   /* grass green */
+    --c3-bg:  #b07a10;  --c3-fg:  #f0c040;   /* golden yellow */
+    --c4-bg:  #2a6e3a;  --c4-fg:  #5dba78;   /* forest green */
+    --c5-bg:  #7a3a10;  --c5-fg:  #e8824a;   /* warm terracotta */
+    --c6-bg:  #6a3080;  --c6-fg:  #c07ad8;   /* tulip purple */
+    --c7-bg:  #8a4010;  --c7-fg:  #e09050;   /* amber / harvest */
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Rubik', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+}
+
+body { display: flex; flex-direction: column; }
+
+/* ===================== MAP ===================== */
+#map-container {
+    height: 50vh; width: 100%;
+    border-bottom: 3px solid var(--primary);
+    position: relative;
+    flex-shrink: 0;
+}
+
+#map {
+    height: 100%; width: 100%;
+    background-color: #2f8fc8;
+}
+
+/* ===================== SIDEBAR ===================== */
+#sidebar {
+    height: 50vh; width: 100%;
+    overflow-y: auto;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+}
+
+#sidebar header {
+    padding: 18px 20px 10px;
+    background: linear-gradient(135deg, #1a2535 0%, #0f1923 100%);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+#sidebar header h1 {
+    margin: 0 0 4px;
+    font-size: 1.3em;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.2;
+}
+
+#sidebar header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
+#cards-container {
+    padding: 12px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+}
+
+@media (min-width: 768px) {
+    body { flex-direction: row; }
+    #map-container {
+        height: 100vh; width: 62%;
+        border-bottom: none;
+        border-left: 3px solid var(--primary);
+    }
+    #sidebar {
+        height: 100vh; width: 38%;
+    }
+    #sidebar header { padding: 24px 24px 14px; }
+    #sidebar header h1 { font-size: 1.5em; }
+    #cards-container { padding: 16px 20px 24px; gap: 16px; }
+}
+
+/* ===================== CARDS ===================== */
+.card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    border: 1.5px solid var(--border);
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    background: var(--bg-card-hover);
+}
+
+.card.active {
+    border-color: var(--card-color, var(--primary));
+    box-shadow: 0 0 0 3px rgba(255,126,103,0.2);
+}
+
+/* Left strip = image (in RTL, this is on the right side visually) */
+.card-image-strip {
+    width: 90px;
+    min-width: 90px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.card-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.45));
+}
+
+.card-day-badge {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    color: #fff;
+    font-size: 0.62em;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 8px;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    line-height: 1.4;
+}
+
+.card-body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+}
+
+.card-date {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+    direction: ltr;
+    text-align: right;
+}
+
+.card-title {
+    margin: 0 0 5px;
+    font-size: 0.95em;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.card-desc {
+    margin: 0 0 8px;
+    font-size: 0.78em;
+    color: var(--text-muted);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: 1px solid var(--card-color, var(--primary));
+    color: var(--card-color, var(--primary));
+    font-size: 0.75em;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background 0.15s, color 0.15s;
+    font-family: 'Rubik', sans-serif;
+}
+
+.card-open-btn:hover {
+    background: var(--card-color, var(--primary));
+    color: #fff;
+}
+
+/* ===================== CUSTOM MAP MARKERS ===================== */
+.custom-marker {
+    position: relative;
+    width: 62px;
+    height: 62px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.custom-marker:hover {
+    transform: scale(1.15);
+    z-index: 9999 !important;
+}
+
+.marker-circle {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: 3px solid var(--marker-color, #ff7e67);
+    outline: 1.5px solid rgba(255,255,255,0.85);
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.25);
+    background: #ccc;
+    position: relative;
+}
+
+.marker-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.marker-day-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--marker-color, #ff7e67);
+    color: #fff;
+    font-size: 0.6em;
+    font-weight: 800;
+    text-align: center;
+    padding: 2px 3px;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+}
+
+/* pin tip at bottom */
+.marker-pin-tip {
+    position: absolute;
+    bottom: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid var(--marker-color, #ff7e67);
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25));
+}
+
+@media (min-width: 768px) {
+    .custom-marker {
+        width: 93px;
+        height: 93px;
+    }
+    .marker-circle {
+        width: 93px;
+        height: 93px;
+    }
+    .marker-day-label {
+        font-size: 0.75em;
+        padding: 3px 4px;
+    }
+    .marker-pin-tip {
+        bottom: -13px;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 14px solid var(--marker-color, #ff7e67);
+    }
+}
+
+/* ===================== MODAL ===================== */
+.hidden { display: none !important; }
+
+#detail-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease;
+    pointer-events: none;
+}
+
+#detail-modal.visible {
+    background: rgba(0, 0, 0, 0.75);
+    pointer-events: all;
+}
+
+.modal-content {
+    background: #1a2535;
+    width: 92%;
+    max-width: 480px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    transform: scale(0.88) translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+}
+
+#detail-modal.visible .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+#modal-color-bar {
+    height: 5px;
+    width: 100%;
+}
+
+.close-btn {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    font-size: 26px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.6);
+    z-index: 10;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.close-btn:hover { color: #fff; }
+
+/* Carousel */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    background: #0f1923;
+    overflow: hidden;
+}
+
+#modal-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.55);
+    color: white;
+    border: none;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 17px;
+    border-radius: 50%;
+    transition: background 0.15s;
+    backdrop-filter: blur(4px);
+}
+
+.carousel-btn:hover { background: rgba(0,0,0,0.85); }
+.carousel-btn.prev { right: 12px; }
+.carousel-btn.next { left: 12px; }
+
+.image-counter {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    backdrop-filter: blur(4px);
+}
+
+/* Modal body */
+.modal-body {
+    padding: 18px 20px 24px;
+}
+
+#modal-title {
+    margin: 0 0 4px;
+    font-size: 1.25em;
+    font-weight: 800;
+    color: var(--text);
+    direction: ltr;
+    text-align: left;
+}
+
+.dates {
+    color: var(--text-muted);
+    font-size: 0.85em;
+    margin: 0 0 12px;
+}
+
+.desc {
+    color: var(--text);
+    font-size: 0.9em;
+    line-height: 1.6;
+    margin: 0 0 20px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    flex: 1;
+    min-width: 130px;
+    text-align: center;
+    padding: 11px 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85em;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: opacity 0.15s, transform 0.1s;
+}
+
+.btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-nav { background: linear-gradient(135deg, #4285F4, #2a65c7); }
+.btn-web { background: linear-gradient(135deg, #34A853, #1e7e34); }
+
+/* ===================== MAP TOGGLE ===================== */
+.map-toggle-wrapper {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 1000;
+    background: rgba(15,25,35,0.88);
+    backdrop-filter: blur(8px);
+    padding: 8px 14px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+    font-size: 0.82em;
+    font-weight: 700;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #3a4a5a;
+    transition: .35s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    right: 3px;
+    bottom: 3px;
+    background: white;
+    transition: .35s;
+    border-radius: 50%;
+}
+
+input:checked + .slider { background: var(--primary); }
+input:checked + .slider:before { transform: translateX(-18px); }
+
+/* ===================== SCROLLBAR ===================== */
+#sidebar::-webkit-scrollbar { width: 5px; }
+#sidebar::-webkit-scrollbar-track { background: transparent; }
+#sidebar::-webkit-scrollbar-thumb { background: #2a3a4a; border-radius: 10px; }
+#sidebar::-webkit-scrollbar-thumb:hover { background: #3a4a5a; }

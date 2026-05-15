@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#1a6b8a"/>
+  <!-- stem -->
+  <rect x="30" y="36" width="4" height="18" rx="2" fill="#4ec882"/>
+  <!-- leaf -->
+  <path d="M32 46 Q22 40 24 32 Q30 38 32 46z" fill="#4ec882"/>
+  <!-- tulip head -->
+  <path d="M32 14 Q24 14 22 24 Q22 34 32 36 Q42 34 42 24 Q40 14 32 14z" fill="#EA4335"/>
+  <!-- tulip shine -->
+  <path d="M32 14 Q28 14 26 22 Q28 16 32 16z" fill="rgba(255,255,255,0.25)"/>
+</svg>
