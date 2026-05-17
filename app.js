@@ -209,11 +209,7 @@ function initSwiper(images) {
     }
 
     const counter = document.getElementById('image-counter');
-    const showControls = images.length > 1;
-
-    document.getElementById('swiper-prev').style.display = showControls ? 'flex' : 'none';
-    document.getElementById('swiper-next').style.display = showControls ? 'flex' : 'none';
-    counter.style.display = showControls ? 'block' : 'none';
+    counter.style.display = images.length > 1 ? 'block' : 'none';
 
     if (images.length === 0) return;
 
@@ -221,8 +217,8 @@ function initSwiper(images) {
         loop: images.length > 1,
         threshold: 10,
         navigation: {
-            prevEl: '#swiper-prev',
-            nextEl: '#swiper-next',
+            prevEl: '.modal-swiper .swiper-button-prev',
+            nextEl: '.modal-swiper .swiper-button-next',
         },
         on: {
             slideChange() {
