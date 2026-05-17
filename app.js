@@ -4,7 +4,7 @@ const tripData = [
         id: "day1", day: "יום 1", date: "27/07/2026",
         title: "Indie Campers Amsterdam",
         coords: [52.2500301,4.6079807],
-        shortDesc: "איסוף הקרוואנים וקבלת הדרכה.",
+        shortDesc: "איסוף הקרוואנים וקבלת הדרכה",
         desc: "התרגשות שיא! נפגשים כולם לאיסוף הקרוואנים מ-Indie Campers.",
         gmaps: "https://maps.app.goo.gl/7Kyz5WFtmRUnjHUD9", web: null,
         colorBg: "#9a6010", colorFg: "#f0b040",
@@ -35,7 +35,7 @@ const tripData = [
         title: "Vakantiepark Cnossen Leekstermeer",
         coords: [53.1667, 6.4333],
         shortDesc: "יומיים של רוגע על שפת האגם הצפוני",
-        desc: "הזדמנות לשיט בסירה, טיולי אופניים וביקור בעיר הציורית Zwolle הסמוכה.",
+        desc: "הזדמנות לשיט בסירה, טיולי אופניים וביקור בעיר העתיקה Groningen הסמוכה.",
         gmaps: "https://maps.app.goo.gl/MPvb85dskQfELs9YA", web: "https://www.cnossenleekstermeer.nl/",
         colorBg: "#2a6e3a", colorFg: "#5dba78",
         images: ["images/day3-1.jpg", "images/day3-2.jpg", "images/day3-3.jpg", "images/day3-4.jpg", "images/day3-5.jpg"]
@@ -64,7 +64,7 @@ const tripData = [
         id: "day8", day: "יום 8", date: "03/08/2026",
         title: "Indie Campers Amsterdam",
         coords: [52.2500301,4.6079807],
-        shortDesc: "מחזירים את הקרוואנים - סיום הטיול.",
+        shortDesc: "מחזירים את הקרוואנים - סיום הטיול",
         desc: "נפרדים מהקרוואנים שליוו אותנו בטיול.",
         gmaps: "https://maps.app.goo.gl/7Kyz5WFtmRUnjHUD9", web: null,
         colorBg: "#7a2060", colorFg: "#d060a8",
@@ -86,14 +86,13 @@ const realMapLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}
 const nlBounds = [[51.675, 2.803], [53.567, 7.858]];
 const illustratedLayer = L.imageOverlay('map-painting.jpg', nlBounds);
 illustratedLayer.addTo(map);
-map.fitBounds(nlBounds);
 const isMobile = window.innerWidth < 768;
-if (isMobile) {
-    map.once('moveend', () => { map.zoomIn(); map.once('moveend', () => map.panTo([52.9, 5.7])); });
-    map.zoomIn();
-} else {
-    map.once('moveend', () => map.panTo([52.9, 5.7]));
-}
+const targetZoom = isMobile ? 8 : 8;
+// start zoomed out, then fly in for the cinematic intro effect
+map.setView([52.8, 5.5], targetZoom - 1, { animate: false });
+setTimeout(() => {
+    map.flyTo([52.8, 5.5], targetZoom, { animate: true, duration: 0.6 });
+}, 300);
 // --- בניית מרקרים מותאמים אישית ---
 const cardsContainer = document.getElementById('cards-container');
 const waypoints = [];
@@ -183,15 +182,62 @@ document.getElementById('map-toggle').addEventListener('change', function (e) {
 });
 
 
-// --- לוגיקת המודאל ---
-let currentImages = [];
-let currentIndex = 0;
+// --- לוגיקת המודאל + Swiper ---
+
+// --- preload כל תמונות הטיול ברקע בטעינת הדף ---
+window.addEventListener('load', () => {
+    tripData.forEach(item => {
+        (item.images || []).forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    });
+});
+
+// אתחול Swiper
+let modalSwiper = null;
+
+function initSwiper(images) {
+    const slidesWrapper = document.getElementById('swiper-slides');
+    slidesWrapper.innerHTML = images.map(src =>
+        `<div class="swiper-slide"><img src="${src}" alt="תמונת המקום"></div>`
+    ).join('');
+
+    if (modalSwiper) {
+        modalSwiper.destroy(true, true);
+        modalSwiper = null;
+    }
+
+    const counter = document.getElementById('image-counter');
+    const showControls = images.length > 1;
+
+    document.getElementById('swiper-prev').style.display = showControls ? 'flex' : 'none';
+    document.getElementById('swiper-next').style.display = showControls ? 'flex' : 'none';
+    counter.style.display = showControls ? 'block' : 'none';
+
+    if (images.length === 0) return;
+
+    modalSwiper = new Swiper('.modal-swiper', {
+        loop: images.length > 1,
+        threshold: 10,
+        navigation: {
+            prevEl: '#swiper-prev',
+            nextEl: '#swiper-next',
+        },
+        on: {
+            slideChange() {
+                counter.textContent = `${this.realIndex + 1} / ${images.length}`;
+            }
+        }
+    });
+
+    counter.textContent = `1 / ${images.length}`;
+}
 
 function openModal(id) {
     const data = tripData.find(item => item.id === id);
     if (!data) return;
 
-    // highlight כרטיס מתאים
     document.querySelectorAll('.card').forEach(c => {
         c.classList.toggle('active', c.dataset.id === id);
     });
@@ -201,9 +247,7 @@ function openModal(id) {
     document.getElementById('modal-desc').textContent = data.desc;
     document.getElementById('modal-color-bar').style.background = data.colorBg;
 
-    currentImages = data.images || [];
-    currentIndex = 0;
-    updateCarouselUI();
+    initSwiper(data.images || []);
 
     document.getElementById('modal-gmaps').href = data.gmaps;
     const webBtn = document.getElementById('modal-website');
@@ -216,37 +260,7 @@ function openModal(id) {
 
     const modal = document.getElementById('detail-modal');
     modal.classList.remove('hidden');
-    // small delay to trigger transition
     requestAnimationFrame(() => modal.classList.add('visible'));
-}
-
-function changeSlide(direction) {
-    currentIndex += direction;
-    if (currentIndex >= currentImages.length) currentIndex = 0;
-    if (currentIndex < 0) currentIndex = currentImages.length - 1;
-    updateCarouselUI();
-}
-
-function updateCarouselUI() {
-    const imgEl = document.getElementById('modal-image');
-    const counter = document.getElementById('image-counter');
-    const prevBtn = document.querySelector('.carousel-btn.prev');
-    const nextBtn = document.querySelector('.carousel-btn.next');
-
-    if (currentImages.length > 0) {
-        imgEl.src = currentImages[currentIndex];
-        imgEl.style.display = 'block';
-        counter.textContent = `${currentIndex + 1} / ${currentImages.length}`;
-        counter.style.display = currentImages.length > 1 ? 'block' : 'none';
-        const show = currentImages.length > 1 ? 'flex' : 'none';
-        prevBtn.style.display = show;
-        nextBtn.style.display = show;
-    } else {
-        imgEl.style.display = 'none';
-        prevBtn.style.display = 'none';
-        nextBtn.style.display = 'none';
-        counter.style.display = 'none';
-    }
 }
 
 function closeModal() {

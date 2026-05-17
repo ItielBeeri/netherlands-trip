@@ -357,7 +357,7 @@ body { display: flex; flex-direction: column; }
 
 .close-btn:hover { color: #fff; }
 
-/* Carousel */
+/* Carousel / Swiper */
 .carousel-container {
     position: relative;
     width: 100%;
@@ -366,11 +366,23 @@ body { display: flex; flex-direction: column; }
     overflow: hidden;
 }
 
-#modal-image {
+.modal-swiper {
+    width: 100%;
+    height: 100%;
+}
+
+.modal-swiper .swiper-slide {
+    width: 100%;
+    height: 100%;
+}
+
+.modal-swiper .swiper-slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 .carousel-btn {

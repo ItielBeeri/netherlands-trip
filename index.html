@@ -7,6 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -35,12 +36,14 @@
             <div id="modal-color-bar"></div>
             <span class="close-btn" onclick="closeModal()">&times;</span>
 
-            <!-- קרוסלת תמונות -->
+            <!-- קרוסלת תמונות (Swiper) -->
             <div class="carousel-container">
-                <img id="modal-image" src="" alt="תמונת המקום">
-                <button class="carousel-btn prev" onclick="changeSlide(-1)">&#10094;</button>
-                <button class="carousel-btn next" onclick="changeSlide(1)">&#10095;</button>
-                <div id="image-counter" class="image-counter">1/1</div>
+                <div class="swiper modal-swiper">
+                    <div class="swiper-wrapper" id="swiper-slides"></div>
+                </div>
+                <button class="carousel-btn prev" id="swiper-prev">&#10094;</button>
+                <button class="carousel-btn next" id="swiper-next">&#10095;</button>
+                <div id="image-counter" class="image-counter"></div>
             </div>
 
             <div class="modal-body">
@@ -56,6 +59,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
