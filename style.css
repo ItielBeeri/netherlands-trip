@@ -418,6 +418,7 @@ body { display: flex; flex-direction: column; }
     border-radius: 12px;
     font-size: 12px;
     backdrop-filter: blur(4px);
+    z-index: 10;
 }
 
 /* Modal body */
